@@ -3,9 +3,12 @@ const User=require('../../models/User');
 const gravatar=require('gravatar');
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
-const keys=require('../../config');
+const keys=require('../../config/keys.js');
+const passport=require('passport');
 const router=express.Router();
 router.get('/test',(req,res)=>res.json({msg:"user workig"}));
+
+// routes @ localhost/api/users/register
 
 router.post('/register',(req,res)=>{
 	User.findOne({email:req.body.email})
@@ -42,6 +45,8 @@ router.post('/register',(req,res)=>{
 		.catch(err=>console.log(err));
 });
 
+// routes @ localhost/api/users/login
+
 router.post('/login',(req,res)=>{
 	const email=req.body.email;
 	const password=req.body.password;
@@ -71,4 +76,11 @@ router.post('/login',(req,res)=>{
 				});				
 		});
 });
+
+// routes @ localhost/api/users/current
+
+router.get('/current',passport.authenticate('jwt',{session:false}),(req,res)=>{
+	res.json(req.user);
+});
+
 module.exports=router;
